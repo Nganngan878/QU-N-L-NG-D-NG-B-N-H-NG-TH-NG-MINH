@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<DanhSachSanPham>
+    <SanPham>
+        <MaSP>SP002</MaSP>
+        <TenSP>Cam Vàng Úc</TenSP>
+        <Loai>Trái cây</Loai>
+        <GiaNhap>38000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1547514701-42782101795e?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP004</MaSP>
+        <TenSP>Nho Đen Hàn Quốc</TenSP>
+        <Loai>Trái cây</Loai>
+        <GiaNhap>120000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1537640538966-79f369143f8f?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP008</MaSP>
+        <TenSP>Nước Cam Vắt Tươi</TenSP>
+        <Loai>Đồ uống</Loai>
+        <GiaNhap>25000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP009</MaSP>
+        <TenSP>Trà Sữa Trân Châu</TenSP>
+        <Loai>Đồ uống</Loai>
+        <GiaNhap>35000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP010</MaSP>
+        <TenSP>Cà Phê Đen Nguyên Chất</TenSP>
+        <Loai>Đồ uống</Loai>
+        <GiaNhap>30000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP011</MaSP>
+        <TenSP>Nước Dừa Tươi</TenSP>
+        <Loai>Đồ uống</Loai>
+        <GiaNhap>20000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1618897996318-5a901fa696ca?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP012</MaSP>
+        <TenSP>Sinh Tố Bơ Mật Ong</TenSP>
+        <Loai>Đồ uống</Loai>
+        <GiaNhap>45000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1638176066666-ffb2f013c7dd?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP014</MaSP>
+        <TenSP>Phở Bò Hà Nội</TenSP>
+        <Loai>Đồ ăn</Loai>
+        <GiaNhap>55000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP016</MaSP>
+        <TenSP>Bánh Cuốn Hà Nội</TenSP>
+        <Loai>Đồ ăn</Loai>
+        <GiaNhap>35000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP017</MaSP>
+        <TenSP>Pizza Hải Sản Ý</TenSP>
+        <Loai>Đồ ăn</Loai>
+        <GiaNhap>150000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP018</MaSP>
+        <TenSP>Burger Bò Phô Mai</TenSP>
+        <Loai>Đồ ăn</Loai>
+        <GiaNhap>75000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP001</MaSP>
+        <TenSP>Táo Đỏ Mỹ</TenSP>
+        <Loai>Trái cây</Loai>
+        <GiaNhap>45000</GiaNhap>
+        <SoLuongTon>98</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP006</MaSP>
+        <TenSP>Xoài Cát Hòa Lộc</TenSP>
+        <Loai>Trái cây</Loai>
+        <GiaNhap>55000</GiaNhap>
+        <SoLuongTon>98</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP003</MaSP>
+        <TenSP>Chuối Tiêu Việt Nam</TenSP>
+        <Loai>Trái cây</Loai>
+        <GiaNhap>20000</GiaNhap>
+        <SoLuongTon>98</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>0123</MaSP>
+        <TenSP>hhh</TenSP>
+        <Loai>Khác</Loai>
+        <GiaNhap>345000</GiaNhap>
+        <SoLuongTon>85</SoLuongTon>
+        <HinhAnh>https://khoinguonsangtao.vn/wp-content/uploads/2022/10/anh-trai-tao-dep.jpg</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP013</MaSP>
+        <TenSP>Bánh Mì Pate Sài Gòn</TenSP>
+        <Loai>Đồ ăn</Loai>
+        <GiaNhap>20000</GiaNhap>
+        <SoLuongTon>98</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP015</MaSP>
+        <TenSP>Cơm Tấm Sườn Nướng</TenSP>
+        <Loai>Đồ ăn</Loai>
+        <GiaNhap>50000</GiaNhap>
+        <SoLuongTon>93</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP007</MaSP>
+        <TenSP>Bơ Booth Đắk Lắk</TenSP>
+        <Loai>Trái cây</Loai>
+        <GiaNhap>40000</GiaNhap>
+        <SoLuongTon>95</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP005</MaSP>
+        <TenSP>Dâu Tây Đà Lạt</TenSP>
+        <Loai>Trái cây</Loai>
+        <GiaNhap>65000</GiaNhap>
+        <SoLuongTon>95</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP021</MaSP>
+        <TenSP>Áo Khoác Bomber Unisex</TenSP>
+        <Loai>Quần áo</Loai>
+        <GiaNhap>450000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP022</MaSP>
+        <TenSP>Váy Hoa Nữ Mùa Hè</TenSP>
+        <Loai>Quần áo</Loai>
+        <GiaNhap>280000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP024</MaSP>
+        <TenSP>Giày Sneaker Trắng</TenSP>
+        <Loai>Giày dép</Loai>
+        <GiaNhap>850000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP026</MaSP>
+        <TenSP>Giày Cao Gót Nữ 7cm</TenSP>
+        <Loai>Giày dép</Loai>
+        <GiaNhap>420000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP027</MaSP>
+        <TenSP>Giày Boot Nam Da Thật</TenSP>
+        <Loai>Giày dép</Loai>
+        <GiaNhap>950000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1520639888713-7851133b1ed0?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP028</MaSP>
+        <TenSP>Nồi Cơm Điện 1.8L</TenSP>
+        <Loai>Dụng cụ</Loai>
+        <GiaNhap>750000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP029</MaSP>
+        <TenSP>Máy Xay Sinh Tố Công Suất Lớn</TenSP>
+        <Loai>Dụng cụ</Loai>
+        <GiaNhap>1200000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1570222094114-d054a817e56b?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP030</MaSP>
+        <TenSP>Chảo Chống Dính Ceramic</TenSP>
+        <Loai>Dụng cụ</Loai>
+        <GiaNhap>480000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1512207736890-6ffed8a84e8d?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP031</MaSP>
+        <TenSP>Bộ Dao Nhà Bếp Inox 5 Món</TenSP>
+        <Loai>Dụng cụ</Loai>
+        <GiaNhap>320000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1593618998160-e34014e67546?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP032</MaSP>
+        <TenSP>Ấm Đun Siêu Tốc 1.7L</TenSP>
+        <Loai>Dụng cụ</Loai>
+        <GiaNhap>380000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP033</MaSP>
+        <TenSP>Kem Dưỡng Da Ban Đêm</TenSP>
+        <Loai>Mỹ phẩm</Loai>
+        <GiaNhap>320000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1556228578-8c89e6adf883?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP034</MaSP>
+        <TenSP>Son Môi Lì Cao Cấp</TenSP>
+        <Loai>Mỹ phẩm</Loai>
+        <GiaNhap>450000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1586495777744-4e6232bf2f8d?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP035</MaSP>
+        <TenSP>Serum Vitamin C Sáng Da</TenSP>
+        <Loai>Mỹ phẩm</Loai>
+        <GiaNhap>580000</GiaNhap>
+        <SoLuongTon>99</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP019</MaSP>
+        <TenSP>Áo Thun Nam Basic Cotton</TenSP>
+        <Loai>Quần áo</Loai>
+        <GiaNhap>120000</GiaNhap>
+        <SoLuongTon>98</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP020</MaSP>
+        <TenSP>Quần Jeans Skinny Nữ</TenSP>
+        <Loai>Quần áo</Loai>
+        <GiaNhap>350000</GiaNhap>
+        <SoLuongTon>98</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP023</MaSP>
+        <TenSP>Áo Sơ Mi Trắng Nam</TenSP>
+        <Loai>Quần áo</Loai>
+        <GiaNhap>220000</GiaNhap>
+        <SoLuongTon>98</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+    <SanPham>
+        <MaSP>SP025</MaSP>
+        <TenSP>Dép Lê Đi Biển Thời Trang</TenSP>
+        <Loai>Giày dép</Loai>
+        <GiaNhap>180000</GiaNhap>
+        <SoLuongTon>98</SoLuongTon>
+        <HinhAnh>https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?auto=format&amp;fit=crop&amp;w=400&amp;q=80</HinhAnh>
+    </SanPham>
+</DanhSachSanPham>

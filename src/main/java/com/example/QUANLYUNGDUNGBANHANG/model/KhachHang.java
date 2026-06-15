@@ -1,0 +1,66 @@
+package com.example.QUANLYUNGDUNGBANHANG.model;
+
+public class KhachHang {
+    private String maKH;
+    private String tenKH;
+    private String ngaySinh;
+    private String soDienThoai;
+    private String email;
+    private String diaChi;
+    private String loaiKH;
+
+    public KhachHang(String maKH, String tenKH, String ngaySinh, String soDienThoai, String email, String diaChi) {
+        this.maKH = maKH;
+        this.tenKH = tenKH;
+        this.ngaySinh = ngaySinh;
+        this.soDienThoai = soDienThoai;
+        this.email = email;
+        this.diaChi = diaChi;
+        this.loaiKH = "Thường"; 
+    }
+
+    public KhachHang(String maKH, String tenKH, String ngaySinh, String soDienThoai, String email, String diaChi,
+                     String loaiKH) {
+        this.maKH = maKH;
+        this.tenKH = tenKH;
+        this.ngaySinh = ngaySinh;
+        this.soDienThoai = soDienThoai;
+        this.email = email;
+        this.diaChi = diaChi;
+        this.loaiKH = loaiKH;
+    }
+
+    public String getMaKH() { return maKH; }
+    public void setMaKH(String maKH) { this.maKH = maKH; }
+
+    public String getTenKH() { return tenKH; }
+    public void setTenKH(String tenKH) { this.tenKH = tenKH; }
+
+    public String getNgaySinh() { return ngaySinh; }
+    public void setNgaySinh(String ngaySinh) { this.ngaySinh = ngaySinh; }
+
+    public String getSoDienThoai() { return soDienThoai; }
+    public void setSoDienThoai(String soDienThoai) { this.soDienThoai = soDienThoai; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getDiaChi() { return diaChi; }
+    public void setDiaChi(String diaChi) { this.diaChi = diaChi; }
+
+    public String getLoaiKH() { return loaiKH; }
+    public void setLoaiKH(String loaiKH) { this.loaiKH = loaiKH; }
+
+    @Override
+    public String toString() {
+        return "KhachHang[" +
+                "maKH=" + maKH +
+                ", tenKH=" + tenKH +
+                ", ngaySinh=" + ngaySinh +
+                ", soDienThoai=" + soDienThoai +
+                ", email=" + email +
+                ", diaChi=" + diaChi +
+                ", loaiKH=" + loaiKH +
+                "]";
+    }
+}
