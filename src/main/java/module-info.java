@@ -6,6 +6,7 @@ module com.example.QUANLYUNGDUNGBANHANG {
     requires org.postgresql.jdbc;     // Để dùng thư viện PostgreSQL
 
     opens com.example.QUANLYUNGDUNGBANHANG to javafx.fxml;
+
     exports com.example.QUANLYUNGDUNGBANHANG;
 
     // Xuất các package cho JavaFX

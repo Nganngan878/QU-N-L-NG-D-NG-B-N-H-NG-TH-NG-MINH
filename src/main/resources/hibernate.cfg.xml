@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+        <!-- Database connection settings -->
+        <!-- These will be overridden programmatically in DBConnection, but good to have placeholders -->
+        <property name="connection.driver_class">org.postgresql.Driver</property>
+        
+        <!-- SQL dialect -->
+        <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+
+        <!-- Echo all executed SQL to stdout -->
+        <property name="show_sql">true</property>
+        <!-- Format SQL for readability -->
+        <property name="format_sql">true</property>
+
+        <!-- Drop and re-create the database schema on startup: update, create, create-drop, none -->
+        <property name="hbm2ddl.auto">update</property>
+
+        <!-- Use the C3P0 connection pool provider (Optional) -->
+        <property name="connection.pool_size">10</property>
+
+        <!-- Disable the second-level cache  -->
+        <property name="cache.provider_class">org.hibernate.cache.internal.NoCacheProvider</property>
+
+        <!-- Mappings will be added here -->
+        <mapping class="com.example.QUANLYUNGDUNGBANHANG.model.TaiKhoan"/>
+        <mapping class="com.example.QUANLYUNGDUNGBANHANG.model.SanPham"/>
+        <mapping class="com.example.QUANLYUNGDUNGBANHANG.model.KhachHang"/>
+        <mapping class="com.example.QUANLYUNGDUNGBANHANG.model.HoaDon"/>
+        
+    </session-factory>
+</hibernate-configuration>

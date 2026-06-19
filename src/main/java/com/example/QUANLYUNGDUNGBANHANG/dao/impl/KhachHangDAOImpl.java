@@ -89,6 +89,27 @@ public class KhachHangDAOImpl implements KhachHangDAO {
     }
 
     @Override
+    public boolean update(String oldMaKH, KhachHang kh) {
+        String sql = "UPDATE khachhang SET makh=?, tenkh=?, ngaysinh=?, sdt=?, email=?, diachi=?, loaikh=? WHERE makh=?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, kh.getMaKH());
+            ps.setString(2, kh.getTenKH());
+            ps.setString(3, kh.getNgaySinh());
+            // Mã hóa AES trước khi lưu
+            ps.setString(4, AESUtil.encrypt(kh.getSoDienThoai()));
+            ps.setString(5, AESUtil.encrypt(kh.getEmail()));
+            ps.setString(6, kh.getDiaChi());
+            ps.setString(7, kh.getLoaiKH());
+            ps.setString(8, oldMaKH);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
     public boolean delete(String maKH) {
         String sql = "DELETE FROM khachhang WHERE makh = ?";
         try (Connection conn = DBConnection.getConnection();

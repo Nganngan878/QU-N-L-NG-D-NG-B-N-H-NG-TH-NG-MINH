@@ -9,6 +9,8 @@ public class KhachHang {
     private String diaChi;
     private String loaiKH;
 
+    public KhachHang() {}
+
     public KhachHang(String maKH, String tenKH, String ngaySinh, String soDienThoai, String email, String diaChi) {
         this.maKH = maKH;
         this.tenKH = tenKH;

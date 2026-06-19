@@ -4,9 +4,31 @@
    ===================================================== */
 
 .root {
-    -fx-font-family: 'Segoe UI', Arial, sans-serif;
+    -fx-font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
     -fx-background-color: #F3F4F6;
     -fx-font-size: 13px;
+}
+
+/* Axis and Charts Styling */
+.chart {
+    -fx-font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
+.chart-title {
+    -fx-font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+.axis {
+    -fx-font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    -fx-font-size: 11px;
+}
+.axis-label {
+    -fx-font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    -fx-font-size: 12px;
+}
+.tick-label {
+    -fx-font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    -fx-font-size: 11px;
 }
 
 /* =====================================================

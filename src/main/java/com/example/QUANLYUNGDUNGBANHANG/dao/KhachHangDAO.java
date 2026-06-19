@@ -7,6 +7,7 @@ public interface KhachHangDAO {
     List<KhachHang> findAll();
     boolean insert(KhachHang kh);
     boolean update(KhachHang kh);
+    boolean update(String oldMaKH, KhachHang kh);
     boolean delete(String maKH);
     KhachHang findById(String maKH);
 }

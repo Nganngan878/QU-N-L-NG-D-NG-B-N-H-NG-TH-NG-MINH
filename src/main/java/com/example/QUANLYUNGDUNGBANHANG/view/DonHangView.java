@@ -60,12 +60,18 @@ public class DonHangView extends VBox {
     private int currentTab = 0;
     private final List<Button> tabBtns = new ArrayList<>();
     private final StackPane contentArea = new StackPane();
+    private final String role; // Role của người dùng đang đăng nhập
 
     // Dữ liệu mẫu (giai đoạn được gán giả lập từ HoaDon lịch sử)
     private final HoaDonController controller = new HoaDonController();
     private final List<ObservableList<HoaDon>> stagedData = new ArrayList<>();
 
     public DonHangView() {
+        this("USER");
+    }
+
+    public DonHangView(String role) {
+        this.role = role != null ? role : "USER";
         this.setSpacing(0);
         this.setStyle("-fx-background-color: #F3F4F6;");
 
@@ -407,6 +413,8 @@ public class DonHangView extends VBox {
         box.setAlignment(Pos.CENTER_RIGHT);
         box.setPadding(new Insets(8, 0, 0, 0));
 
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(role);
+
         // Common: Xem chi tiết
         Button btnDetail = ghostBtn("Xem chi tiết", "#2563EB");
         btnDetail.setOnAction(e -> showOrderDetail(hd, tabIdx));
@@ -430,12 +438,15 @@ public class DonHangView extends VBox {
                 break;
 
             case 1: // Chờ vận chuyển
-                Button btnShip = solidBtn("Giao hàng", STAGE_COLORS[1]);
-                btnShip.setOnAction(e -> showActionConfirm("Xác nhận giao hàng",
-                    "Xác nhận bắt đầu vận chuyển đơn hàng " + hd.getMaHD() + "?", () -> {
-                        moveToNextStage(hd, tabIdx);
-                    }));
-                box.getChildren().add(btnShip);
+                // Chỉ ADMIN mới được bấm Giao hàng — USER chỉ xem
+                if (isAdmin) {
+                    Button btnShip = solidBtn("Giao hàng", STAGE_COLORS[1]);
+                    btnShip.setOnAction(e -> showActionConfirm("Xác nhận giao hàng",
+                        "Xác nhận bắt đầu vận chuyển đơn hàng " + hd.getMaHD() + "?", () -> {
+                            moveToNextStage(hd, tabIdx);
+                        }));
+                    box.getChildren().add(btnShip);
+                }
                 break;
 
             case 2: // Chờ nhận

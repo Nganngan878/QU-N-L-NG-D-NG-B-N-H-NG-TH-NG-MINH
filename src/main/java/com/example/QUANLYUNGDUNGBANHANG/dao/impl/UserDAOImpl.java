@@ -115,4 +115,74 @@ public class UserDAOImpl implements UserDAO {
             return false;
         }
     }
+
+    @Override
+    public java.util.List<User> findAll() {
+        String sql = "SELECT * FROM users ORDER BY id ASC";
+        java.util.List<User> list = new java.util.ArrayList<>();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                User u = new User(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("role")
+                );
+                u.setFullname(rs.getString("fullname"));
+                u.setBio(rs.getString("bio"));
+                u.setGender(rs.getString("gender"));
+                u.setDob(rs.getString("dob"));
+                u.setPhone(rs.getString("phone"));
+                u.setEmail(rs.getString("email"));
+                u.setAvatarUrl(rs.getString("avatar_url"));
+                list.add(u);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    @Override
+    public boolean deleteByUsername(String username) {
+        String sql = "DELETE FROM users WHERE username = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateRole(String username, String newRole) {
+        String sql = "UPDATE users SET role = ? WHERE username = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newRole);
+            ps.setString(2, username);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updatePassword(String username, String hashedPassword) {
+        String sql = "UPDATE users SET password = ? WHERE username = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, hashedPassword);
+            ps.setString(2, username);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

@@ -1,9 +1,10 @@
 package com.example.QUANLYUNGDUNGBANHANG.view;
 
 import com.example.QUANLYUNGDUNGBANHANG.controller.SanPhamController;
-import com.example.QUANLYUNGDUNGBANHANG.model.CartManager;
 import com.example.QUANLYUNGDUNGBANHANG.model.SanPham;
+import com.example.QUANLYUNGDUNGBANHANG.network.Request;
 import com.example.QUANLYUNGDUNGBANHANG.network.Response;
+import com.example.QUANLYUNGDUNGBANHANG.network.SocketClient;
 import com.example.QUANLYUNGDUNGBANHANG.util.AnimationUtil;
 import com.example.QUANLYUNGDUNGBANHANG.util.ImageCache;
 import java.io.File;
@@ -38,14 +39,21 @@ public class SanPhamView extends VBox {
     private final FlowPane productGrid = new FlowPane();
     private String activeFilter = "Tất cả";
     private final String role; // Role của người dùng hiện tại
+    private final String username; // Username của người dùng hiện tại
 
     /** Constructor mặc định — tương thích với code cũ (mặc định ADMIN) */
     public SanPhamView() {
-        this("ADMIN");
+        this("ADMIN", "ADMIN");
     }
 
     /** Constructor có role — kiểm soát hiển thị nút CRUD theo quyền */
     public SanPhamView(String role) {
+        this("ANONYMOUS", role);
+    }
+
+    /** Constructor có username và role — kiểm soát hiển thị nút CRUD theo quyền */
+    public SanPhamView(String username, String role) {
+        this.username = username != null ? username : "ANONYMOUS";
         this.role = role != null ? role : "USER";
         this.setStyle("-fx-background-color: #EFF6FF;");
         this.setSpacing(0);
@@ -357,27 +365,62 @@ public class SanPhamView extends VBox {
         giaLbl.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2563EB;");
 
         // Stock badge
-        Label slBadge = new Label("Kho: " + sp.getSoLuongTon());
+        boolean outOfStock = sp.getSoLuongTon() <= 0;
+        Label slBadge = new Label(outOfStock ? "Hết hàng" : "Kho: " + sp.getSoLuongTon());
         slBadge.setStyle(sp.getSoLuongTon() > 10
             ? "-fx-background-color: #D1FAE5; -fx-text-fill: #065F46; -fx-background-radius: 10; -fx-padding: 2 8; -fx-font-size: 10px;"
-            : "-fx-background-color: #FEE2E2; -fx-text-fill: #991B1B; -fx-background-radius: 10; -fx-padding: 2 8; -fx-font-size: 10px;"
+            : (outOfStock
+                ? "-fx-background-color: #FEE2E2; -fx-text-fill: #991B1B; -fx-background-radius: 10; -fx-padding: 2 8; -fx-font-size: 10px;"
+                : "-fx-background-color: #FEF3C7; -fx-text-fill: #92400E; -fx-background-radius: 10; -fx-padding: 2 8; -fx-font-size: 10px;")
         );
 
         HBox bottomRow = new HBox(6, giaLbl, new Region(), slBadge);
         HBox.setHgrow(bottomRow.getChildren().get(1), Priority.ALWAYS);
         bottomRow.setAlignment(Pos.CENTER_LEFT);
 
-        VBox card = new VBox(8, imageNode, tenLbl, maLbl, bottomRow);
+        // === Nút mua hàng trực tiếp (chỉ hiện với USER) ===
+        boolean isUser = !"ADMIN".equalsIgnoreCase(role);
+        VBox card;
+        if (isUser) {
+            Button btnBuyCard = new Button(outOfStock ? "Hết hàng" : "🛒  Mua ngay");
+            btnBuyCard.setMaxWidth(Double.MAX_VALUE);
+            btnBuyCard.setDisable(outOfStock);
+            btnBuyCard.setStyle(
+                outOfStock
+                ? "-fx-background-color: #E5E7EB; -fx-text-fill: #9CA3AF; -fx-font-size: 12px;" +
+                  "-fx-font-weight: bold; -fx-padding: 7 0; -fx-background-radius: 8;"
+                : "-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-size: 12px;" +
+                  "-fx-font-weight: bold; -fx-padding: 7 0; -fx-background-radius: 8; -fx-cursor: hand;"
+            );
+            if (!outOfStock) {
+                btnBuyCard.setOnMouseEntered(ev -> btnBuyCard.setStyle(
+                    "-fx-background-color: #1D4ED8; -fx-text-fill: white; -fx-font-size: 12px;" +
+                    "-fx-font-weight: bold; -fx-padding: 7 0; -fx-background-radius: 8; -fx-cursor: hand;"
+                ));
+                btnBuyCard.setOnMouseExited(ev -> btnBuyCard.setStyle(
+                    "-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-size: 12px;" +
+                    "-fx-font-weight: bold; -fx-padding: 7 0; -fx-background-radius: 8; -fx-cursor: hand;"
+                ));
+                btnBuyCard.setOnAction(ev -> {
+                    ev.consume(); // ngăn click lan ra card
+                    showPurchaseDialog(sp);
+                });
+            }
+            card = new VBox(8, imageNode, tenLbl, maLbl, bottomRow, btnBuyCard);
+        } else {
+            card = new VBox(8, imageNode, tenLbl, maLbl, bottomRow);
+        }
+
         card.setPadding(new Insets(12));
-        card.setPrefWidth(160);
-        card.setMaxWidth(160);
+        card.setPrefWidth(164);
+        card.setMaxWidth(164);
         card.setStyle(
             "-fx-background-color: #FFFFFF; -fx-background-radius: 10;" +
             "-fx-border-color: #E5E7EB; -fx-border-radius: 10; -fx-border-width: 1;" +
             "-fx-cursor: hand;"
         );
 
-        // Hover effect — dùng ScaleTransition để mượt hơn CSS scale
+        // Hover effect
         card.setOnMouseEntered(e -> {
             AnimationUtil.scaleUp(card, 1.04);
             card.setStyle(
@@ -395,24 +438,33 @@ public class SanPhamView extends VBox {
                 "-fx-cursor: hand;"
             );
         });
-        // Chỉ mở chi tiết khi click đơn (click count == 1), không bắn khi click đúp
+        // Click card → mở chi tiết
         card.setOnMouseClicked(e -> {
             if (e.getButton() == javafx.scene.input.MouseButton.PRIMARY && e.getClickCount() == 1) {
                 showProductDetailsDialog(sp);
             }
         });
 
-        // Context menu
+        // Context menu (chỉ Admin thấy Sửa/Xóa)
         ContextMenu cm = new ContextMenu();
-        MenuItem miEdit   = new MenuItem("✏  Sửa");
-        MenuItem miDelete = new MenuItem("🗑  Xóa");
-        miEdit.setOnAction(e -> showFormDialog(sp));
-        miDelete.setOnAction(e -> {
-            if (showConfirm("Xóa sản phẩm '" + sp.getTen() + "'?")) {
-                if (controller.deleteSanPham(sp.getMa())) loadData();
-            }
-        });
-        cm.getItems().addAll(miEdit, miDelete);
+        MenuItem miDetail = new MenuItem("🔍  Xem chi tiết");
+        miDetail.setOnAction(e -> showProductDetailsDialog(sp));
+        cm.getItems().add(miDetail);
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            MenuItem miEdit   = new MenuItem("✏  Sửa");
+            MenuItem miDelete = new MenuItem("🗑  Xóa");
+            miEdit.setOnAction(e -> showFormDialog(sp));
+            miDelete.setOnAction(e -> {
+                if (showConfirm("Xóa sản phẩm '" + sp.getTen() + "'?")) {
+                    if (controller.deleteSanPham(sp.getMa())) loadData();
+                }
+            });
+            cm.getItems().addAll(miEdit, miDelete);
+        } else if (!outOfStock) {
+            MenuItem miBuy = new MenuItem("🛒  Mua ngay");
+            miBuy.setOnAction(e -> showPurchaseDialog(sp));
+            cm.getItems().add(miBuy);
+        }
         card.setOnContextMenuRequested(e -> cm.show(card, e.getScreenX(), e.getScreenY()));
 
         return card;
@@ -678,50 +730,455 @@ public class SanPhamView extends VBox {
         Label price = new Label(formatMoney(sp.getGiaNhap()));
         price.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2563EB;");
 
-        Label stock = new Label("Kho: " + sp.getSoLuongTon());
-        stock.setStyle("-fx-font-size: 14px; -fx-text-fill: #6B7280;");
+        Label codeLabel = new Label("Mã SP: " + sp.getMa());
+        codeLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #9CA3AF;");
 
-        // Buttons
-        Button btnAddCart = new Button("🛒 Thêm vào giỏ");
-        btnAddCart.setMaxWidth(Double.MAX_VALUE);
-        btnAddCart.setStyle(
-            "-fx-background-color: #EFF6FF; -fx-text-fill: #2563EB; -fx-font-size: 14px; -fx-font-weight: bold;" +
-            "-fx-padding: 12; -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: #BFDBFE; -fx-border-radius: 8;"
-        );
-        
-        Button btnBuyNow = new Button("⚡ Mua ngay");
-        btnBuyNow.setMaxWidth(Double.MAX_VALUE);
-        btnBuyNow.setStyle(
-            "-fx-background-color: #2563EB; -fx-text-fill: #FFFFFF; -fx-font-size: 14px; -fx-font-weight: bold;" +
+        Label typeLabel = new Label("Loại: " + sp.getLoai());
+        typeLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #6B7280;");
+
+        Label stock = new Label("Kho: " + sp.getSoLuongTon() + " sản phẩm");
+        boolean outOfStock = sp.getSoLuongTon() <= 0;
+        stock.setStyle(outOfStock
+            ? "-fx-font-size: 14px; -fx-text-fill: #DC2626; -fx-font-weight: bold;"
+            : "-fx-font-size: 14px; -fx-text-fill: #059669; -fx-font-weight: bold;");
+        if (outOfStock) stock.setText("Hết hàng");
+
+        // Info box
+        VBox infoBox = new VBox(6, codeLabel, typeLabel, stock);
+        infoBox.setAlignment(Pos.CENTER);
+        infoBox.setStyle("-fx-background-color: #F9FAFB; -fx-background-radius: 8; -fx-padding: 12;");
+        infoBox.setMaxWidth(Double.MAX_VALUE);
+
+        // Close button
+        Button btnClose = new Button("Đóng");
+        btnClose.setMaxWidth(Double.MAX_VALUE);
+        btnClose.setStyle(
+            "-fx-background-color: #F3F4F6; -fx-text-fill: #374151; -fx-font-size: 14px; -fx-font-weight: bold;" +
             "-fx-padding: 12; -fx-background-radius: 8; -fx-cursor: hand;"
         );
+        btnClose.setOnAction(e -> dialog.close());
+        btnClose.setOnMouseEntered(e -> btnClose.setStyle(
+            "-fx-background-color: #E5E7EB; -fx-text-fill: #111827; -fx-font-size: 14px; -fx-font-weight: bold;" +
+            "-fx-padding: 12; -fx-background-radius: 8; -fx-cursor: hand;"));
+        btnClose.setOnMouseExited(e -> btnClose.setStyle(
+            "-fx-background-color: #F3F4F6; -fx-text-fill: #374151; -fx-font-size: 14px; -fx-font-weight: bold;" +
+            "-fx-padding: 12; -fx-background-radius: 8; -fx-cursor: hand;"));
 
-        if (sp.getSoLuongTon() <= 0) {
-            btnAddCart.setDisable(true);
-            btnBuyNow.setDisable(true);
-            stock.setText("Kho: Hết hàng");
-            stock.setStyle("-fx-font-size: 14px; -fx-text-fill: #DC2626; -fx-font-weight: bold;");
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(role);
+        if (!isAdmin) {
+            Button btnBuy = new Button("🛒 Mua ngay");
+            btnBuy.setMaxWidth(Double.MAX_VALUE);
+            if (outOfStock) {
+                btnBuy.setDisable(true);
+                btnBuy.setText("Hết hàng");
+                btnBuy.setStyle(
+                    "-fx-background-color: #9CA3AF; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" +
+                    "-fx-padding: 12; -fx-background-radius: 8;"
+                );
+            } else {
+                btnBuy.setStyle(
+                    "-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" +
+                    "-fx-padding: 12; -fx-background-radius: 8; -fx-cursor: hand;"
+                );
+                btnBuy.setOnMouseEntered(ev -> btnBuy.setStyle(
+                    "-fx-background-color: #1D4ED8; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" +
+                    "-fx-padding: 12; -fx-background-radius: 8; -fx-cursor: hand;"));
+                btnBuy.setOnMouseExited(ev -> btnBuy.setStyle(
+                    "-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" +
+                    "-fx-padding: 12; -fx-background-radius: 8; -fx-cursor: hand;"));
+                btnBuy.setOnAction(ev -> {
+                    dialog.close();
+                    showPurchaseDialog(sp);
+                });
+            }
+            root.getChildren().addAll(topRow, imageNode, name, price, infoBox, btnBuy, btnClose);
+        } else {
+            root.getChildren().addAll(topRow, imageNode, name, price, infoBox, btnClose);
         }
-
-        btnAddCart.setOnAction(e -> {
-            CartManager.getInstance().addProduct(sp);
-            dialog.close();
-        });
-
-        btnBuyNow.setOnAction(e -> {
-            CartManager.getInstance().addProduct(sp);
-            dialog.close();
-        });
-
-        VBox btnBox = new VBox(10, btnAddCart, btnBuyNow);
-        btnBox.setPadding(new Insets(10, 0, 0, 0));
-
-        root.getChildren().addAll(topRow, imageNode, name, price, stock, btnBox);
 
         Scene sc = new Scene(root);
         sc.setFill(javafx.scene.paint.Color.TRANSPARENT);
         dialog.setScene(sc);
         dialog.showAndWait();
+    }
+
+    private void showPurchaseDialog(SanPham sp) {
+        Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initStyle(StageStyle.UNDECORATED);
+
+        // === Root container ===
+        VBox root = new VBox(0);
+        root.setStyle(
+            "-fx-background-color: #FFFFFF; -fx-background-radius: 20;" +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 50, 0, 0, 12);"
+        );
+        root.setPrefWidth(400);
+
+        // Bounce-in animation
+        root.setScaleX(0.85); root.setScaleY(0.85); root.setOpacity(0);
+        root.sceneProperty().addListener((obs, o, sc2) -> {
+            if (sc2 != null) {
+                javafx.animation.ScaleTransition st = new javafx.animation.ScaleTransition(javafx.util.Duration.millis(280), root);
+                st.setToX(1.0); st.setToY(1.0);
+                st.setInterpolator(javafx.animation.Interpolator.EASE_OUT);
+                javafx.animation.FadeTransition ft2 = new javafx.animation.FadeTransition(javafx.util.Duration.millis(220), root);
+                ft2.setFromValue(0); ft2.setToValue(1);
+                new javafx.animation.ParallelTransition(st, ft2).play();
+            }
+        });
+
+        // === HEADER (gradient xanh) ===
+        VBox header = new VBox(4);
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setPadding(new Insets(18, 20, 16, 20));
+        header.setStyle("-fx-background-color: linear-gradient(to right, #1D4ED8, #3B82F6); -fx-background-radius: 20 20 0 0;");
+
+        HBox hdrRow = new HBox();
+        hdrRow.setAlignment(Pos.CENTER_LEFT);
+        Label hdrTitle = new Label("🛒  Đặt Mua Sản Phẩm");
+        hdrTitle.setStyle("-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: white;");
+        Region hdrSpacer = new Region(); HBox.setHgrow(hdrSpacer, Priority.ALWAYS);
+        Button closeBtn = new Button("✕");
+        closeBtn.setStyle("-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-background-radius: 50; -fx-font-size: 13px; -fx-cursor: hand; -fx-padding: 4 8;");
+        closeBtn.setOnAction(e -> dialog.close());
+        hdrRow.getChildren().addAll(hdrTitle, hdrSpacer, closeBtn);
+
+        Label hdrSub = new Label("Vui lòng kiểm tra thông tin trước khi thanh toán");
+        hdrSub.setStyle("-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.8);");
+        header.getChildren().addAll(hdrRow, hdrSub);
+
+        // === BODY ===
+        VBox body = new VBox(14);
+        body.setPadding(new Insets(20, 20, 6, 20));
+
+        // --- Thông tin sản phẩm ---
+        HBox productRow = new HBox(14);
+        productRow.setAlignment(Pos.CENTER_LEFT);
+        productRow.setStyle("-fx-background-color: #EFF6FF; -fx-background-radius: 12; -fx-padding: 12;");
+
+        // Mini image/icon
+        StackPane miniImg = new StackPane();
+        miniImg.setPrefSize(56, 56);
+        miniImg.setStyle("-fx-background-color: #DBEAFE; -fx-background-radius: 10;");
+        Label miniIcon = new Label(getIcon(sp.getLoai()));
+        miniIcon.setStyle("-fx-font-size: 26px;");
+        if (sp.getHinhAnh() != null && !sp.getHinhAnh().trim().isEmpty()) {
+            try {
+                javafx.scene.image.Image img = ImageCache.get(sp.getHinhAnh());
+                if (img != null && !img.isError() && img.getWidth() > 0) {
+                    javafx.scene.shape.Rectangle rr = new javafx.scene.shape.Rectangle(56, 56);
+                    rr.setArcWidth(10); rr.setArcHeight(10);
+                    rr.setFill(new javafx.scene.paint.ImagePattern(img));
+                    miniImg.getChildren().addAll(miniIcon, rr);
+                } else {
+                    miniImg.getChildren().add(miniIcon);
+                }
+            } catch (Exception ex) { miniImg.getChildren().add(miniIcon); }
+        } else {
+            miniImg.getChildren().add(miniIcon);
+        }
+
+        VBox productInfo = new VBox(3);
+        HBox.setHgrow(productInfo, Priority.ALWAYS);
+        Label pName = new Label(sp.getTen());
+        pName.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #111827; -fx-wrap-text: true;");
+        pName.setWrapText(true);
+        Label pCode = new Label("Mã: " + sp.getMa() + "  •  " + sp.getLoai());
+        pCode.setStyle("-fx-font-size: 11px; -fx-text-fill: #6B7280;");
+        Label pStock = new Label("Còn lại: " + sp.getSoLuongTon() + " sản phẩm");
+        pStock.setStyle("-fx-font-size: 11px; -fx-text-fill: #059669;");
+        productInfo.getChildren().addAll(pName, pCode, pStock);
+        productRow.getChildren().addAll(miniImg, productInfo);
+
+        // --- Chọn số lượng ---
+        VBox qtySection = new VBox(8);
+        Label qtyTitle = new Label("SỐ LƯỢNG");
+        qtyTitle.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #6B7280;");
+
+        HBox qtyRow = new HBox(10);
+        qtyRow.setAlignment(Pos.CENTER_LEFT);
+
+        Button btnMinus = new Button("－");
+        btnMinus.setPrefSize(36, 36);
+        btnMinus.setStyle("-fx-background-color: #F3F4F6; -fx-background-radius: 8; -fx-font-size: 16px; -fx-font-weight: bold; -fx-cursor: hand; -fx-text-fill: #374151;");
+
+        javafx.scene.control.TextField qtyField = new javafx.scene.control.TextField("1");
+        qtyField.setPrefWidth(70);
+        qtyField.setAlignment(Pos.CENTER);
+        qtyField.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #D1D5DB; -fx-border-width: 1.5; -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #111827;");
+
+        Button btnPlus = new Button("＋");
+        btnPlus.setPrefSize(36, 36);
+        btnPlus.setStyle("-fx-background-color: #2563EB; -fx-background-radius: 8; -fx-font-size: 14px; -fx-font-weight: bold; -fx-cursor: hand; -fx-text-fill: white;");
+
+        Label maxLbl = new Label("(tối đa " + sp.getSoLuongTon() + ")");
+        maxLbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #9CA3AF;");
+
+        qtyRow.getChildren().addAll(btnMinus, qtyField, btnPlus, maxLbl);
+        qtySection.getChildren().addAll(qtyTitle, qtyRow);
+
+        // Parse giá
+        double priceVal;
+        try {
+            priceVal = Double.parseDouble(sp.getGiaNhap().replaceAll("[^\\d.]", ""));
+        } catch (Exception e) { priceVal = 0; }
+        final double finalPrice = priceVal;
+        final int[] currentQty = {1};
+
+        // --- Mã giảm giá ---
+        VBox discountSection = new VBox(8);
+        Label discountTitle = new Label("MÃ GIẢM GIÁ (nếu có)");
+        discountTitle.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #6B7280;");
+        HBox discountRow = new HBox(8);
+        discountRow.setAlignment(Pos.CENTER_LEFT);
+        javafx.scene.control.TextField couponField = new javafx.scene.control.TextField();
+        couponField.setPromptText("Nhập mã giảm giá...");
+        couponField.setPrefHeight(36);
+        HBox.setHgrow(couponField, Priority.ALWAYS);
+        couponField.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #D1D5DB; -fx-border-width: 1.5; -fx-font-size: 13px; -fx-text-fill: #111827; -fx-padding: 6 10;");
+        Button btnApply = new Button("Áp dụng");
+        btnApply.setPrefHeight(36);
+        btnApply.setStyle("-fx-background-color: #10B981; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-size: 12px; -fx-font-weight: bold; -fx-cursor: hand;");
+        Label couponStatus = new Label();
+        couponStatus.setStyle("-fx-font-size: 11px;");
+        discountRow.getChildren().addAll(couponField, btnApply);
+        discountSection.getChildren().addAll(discountTitle, discountRow, couponStatus);
+
+        // --- Tóm tắt đơn hàng ---
+        VBox summaryBox = new VBox(8);
+        summaryBox.setStyle("-fx-background-color: #F9FAFB; -fx-background-radius: 12; -fx-padding: 14;");
+
+        Label summaryTitle = new Label("TÓM TẮT ĐƠN HÀNG");
+        summaryTitle.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #6B7280;");
+
+        HBox row1 = makeSummaryRow("Đơn giá:", formatMoney(sp.getGiaNhap()), false);
+        Label qtyValLbl = new Label("1 sản phẩm");
+        qtyValLbl.setStyle("-fx-font-size: 13px; -fx-text-fill: #374151;");
+        HBox row2 = new HBox();
+        Label r2l = new Label("Số lượng:");
+        r2l.setStyle("-fx-font-size: 13px; -fx-text-fill: #6B7280;");
+        Region r2s = new Region(); HBox.setHgrow(r2s, Priority.ALWAYS);
+        row2.getChildren().addAll(r2l, r2s, qtyValLbl);
+
+        Label discountValLbl = new Label("0 ₫");
+        discountValLbl.setStyle("-fx-font-size: 13px; -fx-text-fill: #059669;");
+        HBox row3 = new HBox();
+        Label r3l = new Label("Giảm giá:");
+        r3l.setStyle("-fx-font-size: 13px; -fx-text-fill: #6B7280;");
+        Region r3s = new Region(); HBox.setHgrow(r3s, Priority.ALWAYS);
+        row3.getChildren().addAll(r3l, r3s, discountValLbl);
+
+        javafx.scene.control.Separator sep2 = new javafx.scene.control.Separator();
+        Label totalTitle = new Label("TỔNG THANH TOÁN");
+        totalTitle.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #6B7280;");
+        Label totalAmtLbl = new Label(formatMoney(sp.getGiaNhap()));
+        totalAmtLbl.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2563EB;");
+
+        summaryBox.getChildren().addAll(summaryTitle, row1, row2, row3, sep2, totalTitle, totalAmtLbl);
+
+        // Discount state
+        final double[] discountPct = {0.0};
+
+        // Hàm cập nhật tóm tắt
+        Runnable updateSummary = () -> {
+            int qty = currentQty[0];
+            double sub = qty * finalPrice;
+            double disc = sub * discountPct[0];
+            double total = sub - disc;
+            qtyValLbl.setText(qty + " sản phẩm");
+            discountValLbl.setText("-" + formatMoney(String.valueOf((long) disc)));
+            totalAmtLbl.setText(formatMoney(String.valueOf((long) total)));
+        };
+
+        // +/- buttons logic
+        btnMinus.setOnAction(ev -> {
+            int val = currentQty[0];
+            if (val > 1) { currentQty[0] = val - 1; qtyField.setText(String.valueOf(currentQty[0])); updateSummary.run(); }
+        });
+        btnPlus.setOnAction(ev -> {
+            int val = currentQty[0];
+            if (val < sp.getSoLuongTon()) { currentQty[0] = val + 1; qtyField.setText(String.valueOf(currentQty[0])); updateSummary.run(); }
+        });
+        qtyField.textProperty().addListener((obs, ov, nv) -> {
+            try {
+                int v = Integer.parseInt(nv.trim());
+                if (v >= 1 && v <= sp.getSoLuongTon()) { currentQty[0] = v; updateSummary.run(); }
+            } catch (Exception ignored) {}
+        });
+
+        // Áp dụng mã giảm giá
+        btnApply.setOnAction(ev -> {
+            String code = couponField.getText().trim().toUpperCase();
+            if (code.equals("GIAM10")) {
+                discountPct[0] = 0.10;
+                couponStatus.setText("✅ Giảm 10%!");
+                couponStatus.setStyle("-fx-font-size: 11px; -fx-text-fill: #059669;");
+            } else if (code.equals("GIAM20")) {
+                discountPct[0] = 0.20;
+                couponStatus.setText("✅ Giảm 20%!");
+                couponStatus.setStyle("-fx-font-size: 11px; -fx-text-fill: #059669;");
+            } else if (code.isEmpty()) {
+                discountPct[0] = 0.0;
+                couponStatus.setText("");
+            } else {
+                discountPct[0] = 0.0;
+                couponStatus.setText("❌ Mã không hợp lệ!");
+                couponStatus.setStyle("-fx-font-size: 11px; -fx-text-fill: #DC2626;");
+            }
+            updateSummary.run();
+        });
+
+        // Error label
+        Label lblError = new Label();
+        lblError.setStyle("-fx-text-fill: #DC2626; -fx-font-size: 12px;");
+
+        body.getChildren().addAll(productRow, qtySection, discountSection, summaryBox, lblError);
+
+        // === FOOTER BUTTONS ===
+        HBox footer = new HBox(10);
+        footer.setPadding(new Insets(14, 20, 20, 20));
+        footer.setAlignment(Pos.CENTER);
+
+        Button btnCancel = new Button("Hủy");
+        btnCancel.setPrefHeight(44);
+        HBox.setHgrow(btnCancel, Priority.ALWAYS);
+        btnCancel.setMaxWidth(Double.MAX_VALUE);
+        btnCancel.setStyle("-fx-background-color: #F3F4F6; -fx-text-fill: #374151; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;");
+        btnCancel.setOnAction(e -> dialog.close());
+        btnCancel.setOnMouseEntered(e -> btnCancel.setStyle("-fx-background-color: #E5E7EB; -fx-text-fill: #111827; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;"));
+        btnCancel.setOnMouseExited(e -> btnCancel.setStyle("-fx-background-color: #F3F4F6; -fx-text-fill: #374151; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;"));
+
+        Button btnPay = new Button("💳  Xác nhận thanh toán");
+        btnPay.setPrefHeight(44);
+        HBox.setHgrow(btnPay, Priority.ALWAYS);
+        btnPay.setMaxWidth(Double.MAX_VALUE);
+        btnPay.setStyle("-fx-background-color: linear-gradient(to right, #1D4ED8, #3B82F6); -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;");
+        btnPay.setOnMouseEntered(e -> btnPay.setStyle("-fx-background-color: linear-gradient(to right, #1E40AF, #2563EB); -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;"));
+        btnPay.setOnMouseExited(e -> btnPay.setStyle("-fx-background-color: linear-gradient(to right, #1D4ED8, #3B82F6); -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;"));
+
+        btnPay.setOnAction(e -> {
+            int qty = currentQty[0];
+            if (qty <= 0 || qty > sp.getSoLuongTon()) {
+                lblError.setText("⚠ Số lượng không hợp lệ! (1 – " + sp.getSoLuongTon() + ")");
+                return;
+            }
+            double sub   = qty * finalPrice;
+            double disc  = sub * discountPct[0];
+            double total = sub - disc;
+            String maHD  = "HD" + System.currentTimeMillis();
+            String ngay  = java.time.LocalDate.now().toString();
+
+            com.example.QUANLYUNGDUNGBANHANG.network.dto.HoaDonDTO dto =
+                new com.example.QUANLYUNGDUNGBANHANG.network.dto.HoaDonDTO(
+                    maHD, ngay, username, sp.getMa(), sp.getTen(), qty, finalPrice, total
+                );
+            dto.setGiamGia(disc);
+            List<com.example.QUANLYUNGDUNGBANHANG.network.dto.HoaDonDTO> payload = List.of(dto);
+
+            Request checkoutReq = new Request("CHECKOUT");
+            checkoutReq.setPayload(payload);
+
+            Stage ownerStage = (Stage) dialog.getScene().getWindow();
+            LoadingDialog loading = new LoadingDialog(ownerStage, "Đang xử lý thanh toán...");
+            dialog.close();
+            loading.show();
+
+            Thread t = new Thread(() -> {
+                Response res = SocketClient.getInstance().sendRequest(checkoutReq);
+                javafx.application.Platform.runLater(() -> {
+                    loading.close();
+                    if (res.isSuccess()) {
+                        showPaymentSuccess(sp.getTen(), qty, total);
+                        loadData();
+                    } else {
+                        showError("❌ Thanh toán thất bại: " + res.getMessage());
+                    }
+                });
+            });
+            t.setDaemon(true);
+            t.start();
+        });
+
+        footer.getChildren().addAll(btnCancel, btnPay);
+
+        root.getChildren().addAll(header, body, footer);
+
+        Scene sc = new Scene(root);
+        sc.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        dialog.setScene(sc);
+        dialog.showAndWait();
+    }
+
+    /** Tạo 1 hàng tóm tắt đơn hàng (label: value) */
+    private HBox makeSummaryRow(String label, String value, boolean bold) {
+        HBox row = new HBox();
+        Label l = new Label(label);
+        l.setStyle("-fx-font-size: 13px; -fx-text-fill: #6B7280;");
+        Region s = new Region(); HBox.setHgrow(s, Priority.ALWAYS);
+        Label v = new Label(value);
+        v.setStyle("-fx-font-size: 13px; -fx-text-fill: #374151;" + (bold ? " -fx-font-weight: bold;" : ""));
+        row.getChildren().addAll(l, s, v);
+        return row;
+    }
+
+    /** Dialog thành công sau khi thanh toán */
+    private void showPaymentSuccess(String tenSP, int qty, double total) {
+        Stage s = new Stage();
+        s.initModality(Modality.APPLICATION_MODAL);
+        s.initStyle(StageStyle.UNDECORATED);
+
+        VBox box = new VBox(14);
+        box.setAlignment(Pos.CENTER);
+        box.setPadding(new Insets(32, 28, 28, 28));
+        box.setPrefWidth(320);
+        box.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.22), 40, 0, 0, 10);");
+
+        // Bounce-in
+        box.setScaleX(0.8); box.setScaleY(0.8); box.setOpacity(0);
+        box.sceneProperty().addListener((obs, o, sc2) -> {
+            if (sc2 != null) {
+                javafx.animation.ScaleTransition st = new javafx.animation.ScaleTransition(javafx.util.Duration.millis(300), box);
+                st.setToX(1.0); st.setToY(1.0); st.setInterpolator(javafx.animation.Interpolator.EASE_OUT);
+                javafx.animation.FadeTransition ft2 = new javafx.animation.FadeTransition(javafx.util.Duration.millis(220), box);
+                ft2.setFromValue(0); ft2.setToValue(1);
+                new javafx.animation.ParallelTransition(st, ft2).play();
+            }
+        });
+
+        Label icon = new Label("✅");
+        icon.setStyle("-fx-font-size: 48px;");
+
+        Label title = new Label("Thanh toán thành công!");
+        title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #059669;");
+
+        VBox infoBox = new VBox(6);
+        infoBox.setAlignment(Pos.CENTER);
+        infoBox.setStyle("-fx-background-color: #F0FDF4; -fx-background-radius: 10; -fx-padding: 14;");
+        Label l1 = new Label("Sản phẩm: " + tenSP);
+        l1.setStyle("-fx-font-size: 13px; -fx-text-fill: #374151; -fx-wrap-text: true;");
+        l1.setWrapText(true); l1.setMaxWidth(240);
+        Label l2 = new Label("Số lượng: " + qty);
+        l2.setStyle("-fx-font-size: 13px; -fx-text-fill: #374151;");
+        Label l3 = new Label("Tổng tiền: " + formatMoney(String.valueOf((long) total)));
+        l3.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #2563EB;");
+        infoBox.getChildren().addAll(l1, l2, l3);
+
+        Label sub = new Label("Cảm ơn bạn đã mua hàng! 🎉");
+        sub.setStyle("-fx-font-size: 13px; -fx-text-fill: #6B7280;");
+
+        Button btnOk = new Button("Hoàn tất");
+        btnOk.setMaxWidth(Double.MAX_VALUE);
+        btnOk.setPrefHeight(42);
+        btnOk.setStyle("-fx-background-color: linear-gradient(to right, #059669, #10B981); -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand;");
+        btnOk.setOnAction(e -> s.close());
+
+        box.getChildren().addAll(icon, title, infoBox, sub, btnOk);
+
+        Scene sc = new Scene(box);
+        sc.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        s.setScene(sc);
+        s.showAndWait();
     }
 
     private VBox formRow(String labelText, Control field) {

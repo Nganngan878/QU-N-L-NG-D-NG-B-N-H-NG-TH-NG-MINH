@@ -15,6 +15,16 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
+        // Nạp phông chữ Inter
+        try {
+            javafx.scene.text.Font.loadFont(Paths.get("fonts/Inter-Regular.ttf").toUri().toURL().toExternalForm(), 13);
+            javafx.scene.text.Font.loadFont(Paths.get("fonts/Inter-Medium.ttf").toUri().toURL().toExternalForm(), 13);
+            javafx.scene.text.Font.loadFont(Paths.get("fonts/Inter-Bold.ttf").toUri().toURL().toExternalForm(), 13);
+            javafx.scene.text.Font.loadFont(Paths.get("fonts/Inter-SemiBold.ttf").toUri().toURL().toExternalForm(), 13);
+        } catch (Exception e) {
+            System.err.println("❌ Không thể nạp phông chữ Inter: " + e.getMessage());
+        }
+
         // Khởi tạo database
         DBConnection.setupDatabase();
 

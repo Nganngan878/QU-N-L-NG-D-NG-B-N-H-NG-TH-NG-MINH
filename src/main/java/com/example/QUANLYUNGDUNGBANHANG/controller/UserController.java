@@ -67,4 +67,48 @@ public class UserController {
         Response res = SocketClient.getInstance().sendRequest(req);
         return res.isSuccess();
     }
+
+    // ==================== ADMIN METHODS ====================
+
+    /**
+     * Lấy toàn bộ danh sách tài khoản (Admin only).
+     */
+    @SuppressWarnings("unchecked")
+    public java.util.List<UserDTO> getAllUsers() {
+        Request req = new Request("GET_ALL_USERS");
+        Response res = SocketClient.getInstance().sendRequest(req);
+        if (res.isSuccess() && res.getData() instanceof java.util.List) {
+            return (java.util.List<UserDTO>) res.getData();
+        }
+        return java.util.Collections.emptyList();
+    }
+
+    /**
+     * Xóa tài khoản user theo username (Admin only).
+     */
+    public Response deleteUser(String username) {
+        Request req = new Request("DELETE_USER");
+        req.addParam("username", username);
+        return SocketClient.getInstance().sendRequest(req);
+    }
+
+    /**
+     * Cập nhật role cho user (Admin only).
+     */
+    public Response updateUserRole(String username, String newRole) {
+        Request req = new Request("UPDATE_USER_ROLE");
+        req.addParam("username", username);
+        req.addParam("role", newRole);
+        return SocketClient.getInstance().sendRequest(req);
+    }
+
+    /**
+     * Đặt lại mật khẩu cho user (Admin only).
+     */
+    public Response resetPassword(String username, String newPassword) {
+        Request req = new Request("RESET_PASSWORD");
+        req.addParam("username", username);
+        req.addParam("newPassword", newPassword);
+        return SocketClient.getInstance().sendRequest(req);
+    }
 }
